@@ -8,7 +8,7 @@ import glob
 def sync_www():
     master_ip = "192.168.1.29"
     slave_ip = "192.168.1.25"
-    remote_user = "root"
+    remote_user = "dupeit"
     source_dir = "/var/www/"  # Added trailing slash
     rsync_options = ["-avz", "--delete"]
 
