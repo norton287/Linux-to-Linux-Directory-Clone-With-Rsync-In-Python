@@ -11,19 +11,18 @@ This Python script simplifies the synchronization of your directories between a 
 
 ## Installation
 
-1. **Clone Repository:** Clone this repository to your master server:
-   ```bash
-   git clone [invalid URL removed]
+* Clone Repository: Clone this repository to your master server:
+```bash
+   git clone https://github.com/norton287/Linux-to-Linux-Directory-Clone-With-Rsync-In-Python.git
 ```
 ## Install Dependencies:
 
 ```Bash
 pip3 install logging
 ```
-
 ## Configuration:
 
-Open sync_www.py in a text editor.
+Open `sync_www.py` in a text editor.
 
 ### Update the following variables to match your environment:
 * master_ip (IP address of the master server)
@@ -46,7 +45,7 @@ sudo mv sync_www.py /usr/bin/sync_www
 
 ## Usage
 
-###You can now run the script from any directory using:
+* You can now run the script from any directory using:
 
 ```Bash
 sync_www.py
@@ -56,21 +55,22 @@ sync_www.py
 
 ### Generate SSH Keys:
 
-### On the master server, run:
+* On the master server, run:
 ```Bash
 ssh-keygen
 ```
 
 * Follow the prompts to create a new SSH key pair (you can leave the passphrase empty for automatic login).
 
-*Copy Public Key to Slave Server:
+ * Copy Public Key to Slave Server:
 
 ### On the master server, run:
+
 ```Bash
 ssh-copy-id user@your_slave_ip
 ```
 
-*Replace user with the SSH username on the slave server and your_slave_ip with the actual IP address.
+* Replace user with the SSH username on the slave server and your_slave_ip with the actual IP address.
 
 ## Contributing
 * Feel free to fork this repository and extend or modify the script to suit your needs. If you have improvements, fixes, or new features, I encourage you to submit a pull request. Your contributions are always welcome!
