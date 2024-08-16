@@ -4,15 +4,17 @@ import logging
 import logging.handlers
 import os
 import glob
+import shutil
 
 def sync_www():
-    master_ip = "192.168.1.29"
-    slave_ip = "192.168.1.25"
-    remote_user = "dupeit"
+    master_ip = "ipofservertodupe"
+    slave_ip = "ipofservertodumpto"
+    remote_user = "useraccountonremoteserver"
     source_dir = "/var/www/"  # Added trailing slash
     rsync_options = ["-avz", "--delete"]
+    exclude_dir = "/var/www/html/dirtoexclude"  # Directory to exclude
 
-    log_file = "/var/log/spindlecrank/sync.log"
+    log_file = "/var/log/yourlogdir/sync.log"
     log_dir = os.path.dirname(log_file)
     os.makedirs(log_dir, exist_ok=True)  # Create log directory if it doesn't exist
 
@@ -27,6 +29,12 @@ def sync_www():
     logger.addHandler(handler)
 
     try:
+        # Exclude the directory before rsync
+        remote_exclude_dir = f"{remote_user}@{slave_ip}:{exclude_dir}"
+        if os.path.exists(exclude_dir):
+            logger.info(f"Excluding directory: {exclude_dir}")
+            shutil.move(exclude_dir, f"{exclude_dir}.tmp")  # Temporarily move the directory
+
         logger.info("Starting synchronization...")
         cmd = ["rsync"] + rsync_options + [source_dir, f"{remote_user}@{slave_ip}:{source_dir}"]
         result = subprocess.run(cmd, capture_output=True, text=True)
@@ -35,6 +43,11 @@ def sync_www():
             logger.info("Synchronization complete!")
         else:
             logger.error(f"Synchronization failed with error:\n{result.stderr}")
+
+        # Restore the excluded directory
+        if os.path.exists(f"{exclude_dir}.tmp"):
+            shutil.move(f"{exclude_dir}.tmp", exclude_dir)
+
     except Exception as e:
         logger.error(f"An unexpected error occurred: {e}")
 
