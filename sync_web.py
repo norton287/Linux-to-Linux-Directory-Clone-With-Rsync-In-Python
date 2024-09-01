@@ -7,14 +7,14 @@ import glob
 import shutil
 
 def sync_www():
-    master_ip = "ipofservertodupe"
-    slave_ip = "ipofservertodumpto"
-    remote_user = "useraccountonremoteserver"
+    master_ip = "192.168.1.29"
+    slave_ip = "192.168.1.25"
+    remote_user = "root"
     source_dir = "/var/www/"  # Added trailing slash
     rsync_options = ["-avz", "--delete"]
-    exclude_dir = "/var/www/html/dirtoexclude"  # Directory to exclude
+    exclude_dir = "/var/www/html/admin"  # Directory to exclude
 
-    log_file = "/var/log/yourlogdir/sync.log"
+    log_file = "/var/log/spindlecrank/sync.log"
     log_dir = os.path.dirname(log_file)
     os.makedirs(log_dir, exist_ok=True)  # Create log directory if it doesn't exist
 
@@ -28,12 +28,14 @@ def sync_www():
     handler.setFormatter(formatter)
     logger.addHandler(handler)
 
-    try:
-        # Exclude the directory before rsync
-        remote_exclude_dir = f"{remote_user}@{slave_ip}:{exclude_dir}"
-        if os.path.exists(exclude_dir):
-            logger.info(f"Excluding directory: {exclude_dir}")
-            shutil.move(exclude_dir, f"{exclude_dir}.tmp")  # Temporarily move the directory
+  try:
+        # Check if exclude_dir is set to 'NONE'
+        if exclude_dir.upper() != 'NONE':
+            # Exclude the directory before rsync
+            remote_exclude_dir = f"{remote_user}@{slave_ip}:{exclude_dir}"
+            if os.path.exists(exclude_dir):
+                logger.info(f"Excluding directory: {exclude_dir}")
+                shutil.move(exclude_dir, f"{exclude_dir}.tmp") 
 
         logger.info("Starting synchronization...")
         cmd = ["rsync"] + rsync_options + [source_dir, f"{remote_user}@{slave_ip}:{source_dir}"]
@@ -44,8 +46,8 @@ def sync_www():
         else:
             logger.error(f"Synchronization failed with error:\n{result.stderr}")
 
-        # Restore the excluded directory
-        if os.path.exists(f"{exclude_dir}.tmp"):
+        # Restore the excluded directory only if it was moved
+        if exclude_dir.upper() != 'NONE' and os.path.exists(f"{exclude_dir}.tmp"):
             shutil.move(f"{exclude_dir}.tmp", exclude_dir)
 
     except Exception as e:
